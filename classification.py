@@ -9,18 +9,11 @@ import numpy as np
 iris = sklearn.datasets.load_iris()
 
 
-def test_reproducibility_1():
-    """
-    答えをわざと説明変数に入れてしまう
-    """
-    features = iris.data
-    target = iris.target.reshape(iris.target.shape[0], 1)
-    features = np.concatenate([features, target], axis=1)
-
+def evaluate_randomstate_reproducibility(X, y, test_size=0.3):
     train_x, test_x, train_y, test_y = \
-        sklearn.model_selection.train_test_split(features,
-                                                 iris.target,
-                                                 test_size=0.3)
+        sklearn.model_selection.train_test_split(X,
+                                                 y,
+                                                 test_size=test_size)
 
     rf = sklearn.ensemble.RandomForestClassifier()
     rf.fit(train_x, train_y)
@@ -30,6 +23,16 @@ def test_reproducibility_1():
     errmsg = '同一モデル，入力データで推論したら値が違っちゃったぜ'
     for i in range(n_trial):
         assert (y_pred_1st == rf.predict(test_x)).all(), errmsg
+
+
+def test_reproducibility_1():
+    """
+    答えをわざと説明変数に入れてしまう
+    """
+    features = iris.data
+    target = iris.target.reshape(iris.target.shape[0], 1)
+    features = np.concatenate([features, target], axis=1)
+    evaluate_randomstate_reproducibility(features, iris.target)
 
 
 def test_reproducibility_2():
@@ -50,19 +53,7 @@ def test_reproducibility_2():
     target = target.reshape(len_target, 1)
     features = np.concatenate([features, target], axis=1)
 
-    train_x, test_x, train_y, test_y = \
-        sklearn.model_selection.train_test_split(features,
-                                                 iris.target,
-                                                 test_size=0.3)
-
-    rf = sklearn.ensemble.RandomForestClassifier()
-    rf.fit(train_x, train_y)
-
-    n_trial = 499
-    y_pred_1st = rf.predict(test_x)
-    errmsg = '同一モデル，入力データで推論したら値が違っちゃったぜ'
-    for i in range(n_trial):
-        assert (y_pred_1st == rf.predict(test_x)).all(), errmsg
+    evaluate_randomstate_reproducibility(features, iris.target)
 
 
 def test_reproducibility_3():
@@ -93,16 +84,4 @@ def test_reproducibility_3():
     # 説明変数に追加する
     features = np.concatenate([features, onehot_target], axis=1)
 
-    train_x, test_x, train_y, test_y = \
-        sklearn.model_selection.train_test_split(features,
-                                                 iris.target,
-                                                 test_size=0.3)
-
-    rf = sklearn.ensemble.RandomForestClassifier()
-    rf.fit(train_x, train_y)
-
-    n_trial = 499
-    y_pred_1st = rf.predict(test_x)
-    errmsg = '同一モデル，入力データで推論したら値が違っちゃったぜ'
-    for i in range(n_trial):
-        assert (y_pred_1st == rf.predict(test_x)).all(), errmsg
+    evaluate_randomstate_reproducibility(features, iris.target)
