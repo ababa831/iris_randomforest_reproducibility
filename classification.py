@@ -67,7 +67,7 @@ def test_reproducibility_2():
 
 def test_reproducibility_3():
     """
-    答え（一部誤答あり，one-hot形式（疑似ルールベース））
+    答え（一部誤答あり，one-hot形式）
     をわざと説明変数に入れてしまう
     """
     features = iris.data
@@ -82,7 +82,7 @@ def test_reproducibility_3():
     errmsg = '誤答が含まれてないぞ'
     assert not (target == iris.target).all(), errmsg
 
-    # ルールベース特徴量ライクに，各特徴に対して0/1値をもたせる
+    # 各特徴に対して0/1値をもたせる
     target = target.reshape(len_target, 1)
     enc = OneHotEncoder(categories="auto", sparse=False, dtype=int)
     onehot_target = enc.fit_transform(target)
